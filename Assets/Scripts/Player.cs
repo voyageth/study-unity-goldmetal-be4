@@ -1,15 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float speed;
+    public int playerSpeed = 3;
+    public int bulletSpeed = 10;
+    public int bulletPower = 1;
+    public float maxShotDelay = 0.2f;
+    public GameObject bulletObjectA;
+    public GameObject bulletObjectB;
 
     bool isTouchTop;
     bool isTouchBottom;
     bool isTouchRight;
     bool isTouchLeft;
+    float currentShotDelay;
 
     Animator animator;
 
@@ -20,21 +27,67 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        Move();
+        Fire();
+        Reload();
+    }
+
+    private void Move()
+    {
         float h = Input.GetAxisRaw("Horizontal");
         if ((isTouchRight && h == 1) || (isTouchLeft && h == -1))
             h = 0;
-        
+
         float v = Input.GetAxisRaw("Vertical");
         if ((isTouchTop && v == 1) || (isTouchBottom && v == -1))
             v = 0;
-        
+
         Vector3 currentPosition = transform.position;
-        Vector3 nextPosition = new Vector3(h, v, 0) * speed * Time.deltaTime;
+        Vector3 nextPosition = new Vector3(h, v, 0) * playerSpeed * Time.deltaTime;
 
         transform.position = currentPosition + nextPosition;
 
         if (Input.GetButtonDown("Horizontal") || Input.GetButtonUp("Horizontal"))
-            animator.SetInteger("HorizontalInput", (int) h);
+            animator.SetInteger("HorizontalInput", (int)h);
+    }
+
+    private void CreateBullet(GameObject bulletObject, Vector3 position)
+    {
+        GameObject bullet = Instantiate(bulletObject, position, transform.rotation);
+        Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+        bulletRigidbody.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
+
+    }
+
+    private void Fire()
+    {
+        if (!Input.GetButton("Fire1"))
+            return;
+
+        if (currentShotDelay < maxShotDelay)
+            return;
+        
+        switch(bulletPower)
+        {
+            case 1:
+                CreateBullet(bulletObjectA, transform.position);
+                break;
+            case 2:
+                CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.1f);
+                CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.1f);
+                break;
+            case 3:
+                CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.35f);
+                CreateBullet(bulletObjectB, transform.position);
+                CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.35f);
+                break;
+        }
+        currentShotDelay = 0;
+    }
+
+    private void Reload()
+    {
+        currentShotDelay += Time.deltaTime;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
