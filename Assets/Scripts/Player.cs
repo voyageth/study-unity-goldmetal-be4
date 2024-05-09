@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     public float maxShotDelay = 0.2f;
     public GameObject bulletObjectA;
     public GameObject bulletObjectB;
+    public GameManager gameManager;
 
     bool isTouchTop;
     bool isTouchBottom;
@@ -56,7 +57,6 @@ public class Player : MonoBehaviour
         GameObject bullet = Instantiate(bulletObject, position, transform.rotation);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
-
     }
 
     private void Fire()
@@ -109,6 +109,11 @@ public class Player : MonoBehaviour
                     isTouchLeft = true;
                     break;
             }
+        }
+        else if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
+        {
+            gameObject.SetActive(false);
+            gameManager.RespawnPlayer();
         }
     }
 

@@ -4,20 +4,68 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public string enemyName;
     public int enemySpeed;
     public int enemyHealth;
     public Sprite normalSprite;
     public Sprite onHitSprite;
+    public GameObject bulletObjectA;
+    public GameObject bulletObjectB;
+    public float maxShotDelay = 1f;
+    public int bulletSpeed = 10;
+    public GameObject player;
 
+    float currentShotDelay;
+    
     SpriteRenderer spriteRenderer;
-    Rigidbody2D enemyRigidbody;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        enemyRigidbody = GetComponent<Rigidbody2D>();
-        enemyRigidbody.velocity = Vector2.down * enemySpeed;
     }
+
+    void Update()
+    {
+        Fire();
+        Reload();
+    }
+    private void CreateBullet(GameObject bulletObject, Vector3 position)
+    {
+        GameObject bullet = Instantiate(bulletObject, position, transform.rotation);
+        Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
+        Vector3 directionVector = (player.transform.position - position).normalized;
+        bulletRigidbody.AddForce(directionVector * bulletSpeed, ForceMode2D.Impulse);
+    }
+
+    private void Fire()
+    {
+        if (currentShotDelay < maxShotDelay)
+            return;
+        
+        if (enemyName == "S")
+        {
+            CreateBullet(bulletObjectA, transform.position);
+        }
+        else if (enemyName == "M")
+        {
+            CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.3f);
+            CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.3f);
+        }
+        else if (enemyName == "L")
+        {
+            CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.3f);
+            CreateBullet(bulletObjectB, transform.position);
+            CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.3f);
+        }
+
+        currentShotDelay = 0;
+    }
+
+    private void Reload()
+    {
+        currentShotDelay += Time.deltaTime;
+    }
+
     void OnHit(int damage)
     {
         enemyHealth -= damage;

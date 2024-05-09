@@ -8,6 +8,9 @@ TagManager:
   - BorderBullet
   - Enemy
   - PlayerBullet
+  - SpawnPointRight
+  - SpawnPointLeft
+  - EnemyBullet
   layers:
   - Default
   - TransparentFX

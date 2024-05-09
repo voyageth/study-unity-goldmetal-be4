@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public GameObject player;
     public GameObject[] enemyObjects;
     public Transform[] spawnPoints;
     public float maxSpawnDelay;
@@ -23,8 +25,40 @@ public class GameManager : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        GameObject enemy = enemyObjects[Random.Range(0, enemyObjects.Length)];
+        GameObject enemyPrefab = enemyObjects[Random.Range(0, enemyObjects.Length)];
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        Instantiate(enemy, spawnPoint.position, spawnPoint.rotation);
+        GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+        Rigidbody2D enemyRigidbody = enemy.GetComponent<Rigidbody2D>();
+        Enemy enemyLogic = enemy.GetComponent<Enemy>();
+        enemyLogic.player = player;
+
+        if (spawnPoint.tag == "SpawnPointRight")
+        {
+            enemy.transform.Rotate(Vector3.back * 90);
+            enemyRigidbody.velocity = new Vector2(-enemyLogic.enemySpeed, -1);
+
+        }
+        else if (spawnPoint.tag == "SpawnPointLeft")
+        {
+            enemy.transform.Rotate(Vector3.forward * 90);
+            enemyRigidbody.velocity = new Vector2(enemyLogic.enemySpeed, -1);
+
+        }
+        else
+        {
+            enemyRigidbody.velocity = new Vector2(0, -enemyLogic.enemySpeed);
+
+        }
+    }
+
+    public void RespawnPlayer()
+    {
+        Invoke("RespawnPlayerExe", 2);
+    }
+
+    private void RespawnPlayerExe()
+    {
+        player.transform.position = Vector3.down * 3.5f;
+        player.SetActive(true);
     }
 }
