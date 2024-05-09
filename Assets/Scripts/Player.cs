@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public int life = 3;
+    public int score = 0;
+    public bool isHit;
     public int playerSpeed = 3;
     public int bulletSpeed = 10;
     public int bulletPower = 1;
@@ -112,8 +115,26 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
         {
+            if (isHit)
+            {
+                return;
+            }
+            isHit = true;
+
+            life--;
+            gameManager.UpdateLifeIcon(life);
+
+            if (life <= 0)
+            {
+                gameManager.GameOver();
+            }
+            else
+            {
+                gameManager.RespawnPlayer();
+            }
+
             gameObject.SetActive(false);
-            gameManager.RespawnPlayer();
+            Destroy(collision.gameObject);
         }
     }
 

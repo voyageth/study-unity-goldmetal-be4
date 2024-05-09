@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public string enemyName;
+    public int enemyScore = 100;
     public int enemySpeed;
     public int enemyHealth;
     public Sprite normalSprite;
@@ -75,6 +76,8 @@ public class Enemy : MonoBehaviour
         
         if (enemyHealth <= 0)
         {
+            Player playerLogic = player.GetComponent<Player>();
+            playerLogic.score += enemyScore;
             Destroy(gameObject);
         }
     }
