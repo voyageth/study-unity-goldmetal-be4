@@ -4,11 +4,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using static ObjectManager;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject player;
-    public GameObject[] enemyObjects;
     public Transform[] spawnPoints;
     public float maxSpawnDelay;
     public float currentSpawnDelay;
@@ -16,6 +16,18 @@ public class GameManager : MonoBehaviour
     public Image[] lifeImages;
     public Image[] boomImages;
     public GameObject gameOverSet;
+
+    public ObjectManager objectManager;
+    public PrefabType[] enemyObjects;
+
+    private void Awake()
+    {
+        enemyObjects = new PrefabType[] {
+            PrefabType.ENEMY_SMALL,
+            PrefabType.ENEMY_MEDIUM,
+            PrefabType.ENEMY_LARGE
+        };
+    }
 
     private void Update()
     {
@@ -35,12 +47,13 @@ public class GameManager : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        GameObject enemyPrefab = enemyObjects[Random.Range(0, enemyObjects.Length)];
+        PrefabType enemyType = enemyObjects[Random.Range(0, enemyObjects.Length)];
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        GameObject enemy = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+        GameObject enemy = objectManager.GetObject(enemyType, spawnPoint.position, spawnPoint.rotation);
         Rigidbody2D enemyRigidbody = enemy.GetComponent<Rigidbody2D>();
         Enemy enemyLogic = enemy.GetComponent<Enemy>();
         enemyLogic.player = player;
+        enemyLogic.objectManager = objectManager;
 
         if (spawnPoint.tag == "SpawnPointRight")
         {

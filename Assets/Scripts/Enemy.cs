@@ -1,23 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static ObjectManager;
 
 public class Enemy : MonoBehaviour
 {
     public string enemyName;
     public int enemyScore = 100;
     public int enemySpeed;
-    public int enemyHealth;
+    public int enemyMaxHealth = 10;
+    public int enemyCurrentHealth;
     public Sprite normalSprite;
     public Sprite onHitSprite;
     public float maxShotDelay = 1f;
     public int bulletSpeed = 10;
+
     public GameObject player;
-    public GameObject bulletObjectA;
-    public GameObject bulletObjectB;
-    public GameObject itemCoin;
-    public GameObject itemPower;
-    public GameObject itemBoom;
+    public ObjectManager objectManager;
 
     float currentShotDelay;
     
@@ -28,14 +29,20 @@ public class Enemy : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private void OnEnable()
+    {
+        enemyCurrentHealth = enemyMaxHealth;
+    }
+
     void Update()
     {
         Fire();
         Reload();
     }
-    private void CreateBullet(GameObject bulletObject, Vector3 position)
+    
+    private void CreateBullet(PrefabType bulletGameType, Vector3 position)
     {
-        GameObject bullet = Instantiate(bulletObject, position, transform.rotation);
+        GameObject bullet = objectManager.GetObject(bulletGameType, position, transform.rotation);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         Vector3 directionVector = (player.transform.position - position).normalized;
         bulletRigidbody.AddForce(directionVector * bulletSpeed, ForceMode2D.Impulse);
@@ -48,18 +55,18 @@ public class Enemy : MonoBehaviour
         
         if (enemyName == "S")
         {
-            CreateBullet(bulletObjectA, transform.position);
+            CreateBullet(PrefabType.ENEMY_BULLET_A, transform.position);
         }
         else if (enemyName == "M")
         {
-            CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.3f);
-            CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.3f);
+            CreateBullet(PrefabType.ENEMY_BULLET_A, transform.position + Vector3.right * 0.3f);
+            CreateBullet(PrefabType.ENEMY_BULLET_A, transform.position + Vector3.left * 0.3f);
         }
         else if (enemyName == "L")
         {
-            CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.3f);
-            CreateBullet(bulletObjectB, transform.position);
-            CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.3f);
+            CreateBullet(PrefabType.ENEMY_BULLET_A, transform.position + Vector3.right * 0.3f);
+            CreateBullet(PrefabType.ENEMY_BULLET_B, transform.position);
+            CreateBullet(PrefabType.ENEMY_BULLET_A, transform.position + Vector3.left * 0.3f);
         }
 
         currentShotDelay = 0;
@@ -72,15 +79,15 @@ public class Enemy : MonoBehaviour
 
     public void OnHit(int damage)
     {
-        if (enemyHealth <= 0)
+        if (enemyCurrentHealth <= 0)
             return;
 
-        enemyHealth -= damage;
+        enemyCurrentHealth -= damage;
         spriteRenderer.sprite = onHitSprite;
         CancelInvoke();
         Invoke("ReturnSprite", 0.1f);
         
-        if (enemyHealth <= 0)
+        if (enemyCurrentHealth <= 0)
         {
             Player playerLogic = player.GetComponent<Player>();
             playerLogic.score += enemyScore;
@@ -90,17 +97,17 @@ public class Enemy : MonoBehaviour
             if (randomNumber < 3)
             {
                 // Coin
-                Instantiate(itemCoin, transform.position, itemCoin.transform.rotation);
+                objectManager.GetObject(PrefabType.ITEM_COIN, transform.position, Quaternion.identity);
             }
             else if (randomNumber < 4)
             {
                 // Power
-                Instantiate(itemPower, transform.position, itemPower.transform.rotation);
+                objectManager.GetObject(PrefabType.ITEM_POWER, transform.position, Quaternion.identity);
             }
             else if (randomNumber < 5)
             {
                 // Boom
-                Instantiate(itemBoom, transform.position, itemBoom.transform.rotation);
+                objectManager.GetObject(PrefabType.ITEM_BOOM, transform.position, Quaternion.identity);
             }
             else 
             {
@@ -108,7 +115,7 @@ public class Enemy : MonoBehaviour
             }
 
             // Àû ÆÄ±«
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 
@@ -120,13 +127,12 @@ public class Enemy : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "BorderBullet")
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         else if (collision.gameObject.tag == "PlayerBullet")
         {
             Bullet bullet = collision.gameObject.GetComponent<Bullet>();
             OnHit(bullet.damage);
-            
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }   
     }
 }

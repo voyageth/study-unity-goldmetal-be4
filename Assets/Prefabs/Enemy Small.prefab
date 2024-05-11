@@ -163,15 +163,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: S
   enemyScore: 50
-  enemySpeed: 3
-  enemyHealth: 3
+  enemySpeed: 2
+  enemyMaxHealth: 1
+  enemyCurrentHealth: 1
   normalSprite: {fileID: 8414478535512612329, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   onHitSprite: {fileID: 4326287474489854147, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   maxShotDelay: 1
   bulletSpeed: 2
-  player: {fileID: 0}
   bulletObjectA: {fileID: 5218189001723559865, guid: 96bd120d8ee09ce4b93a1911bd543719, type: 3}
   bulletObjectB: {fileID: 5218189001723559865, guid: 55a2fae160e53ab42af04652212a818e, type: 3}
   itemCoin: {fileID: 8891006840514441568, guid: 201c38247ace3a845a1600bb887f0501, type: 3}
   itemPower: {fileID: 9011011180444975413, guid: 0dc213b95b65df3498bfd78a2e6602be, type: 3}
   itemBoom: {fileID: 6729756172390640208, guid: e0635d69cd807b4499777ea94766652d, type: 3}
+  player: {fileID: 0}
+  objectManager: {fileID: 0}

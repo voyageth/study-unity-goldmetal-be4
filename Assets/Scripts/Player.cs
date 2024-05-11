@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
+using static ObjectManager;
 
 public class Player : MonoBehaviour
 {
-    const int MAX_BULLET_POWER = 3;
+    const int MAX_BULLET_POWER = 10;
     const int MAX_LIFE_COUNT = 3;
     const int MAX_BOOM_COUNT = 3;
 
@@ -19,8 +21,7 @@ public class Player : MonoBehaviour
     public int boomCount = 3;
     public float maxShotDelay = 0.2f;
     public GameManager gameManager;
-    public GameObject bulletObjectA;
-    public GameObject bulletObjectB;
+    public ObjectManager objectManager;
     public GameObject boomEffect;
 
     bool isTouchTop;
@@ -63,19 +64,11 @@ public class Player : MonoBehaviour
         Invoke("OffBoomEffect", 4);
 
         // 2. remove enemy
-        GameObject[] enemyGameObjects = GameObject.FindGameObjectsWithTag("Enemy");
-        for (int index = 0; index < enemyGameObjects.Length; index++)
-        {
-            Enemy enemy = enemyGameObjects[index].GetComponent<Enemy>();
-            enemy.OnHit(9999);
-        }
+        objectManager.DestroyAllEnemies();
 
         // 3. remove enemy bullet
-        GameObject[] enemyBulletGameObjects = GameObject.FindGameObjectsWithTag("EnemyBullet");
-        for (int index = 0; index < enemyBulletGameObjects.Length; index++)
-        {
-            Destroy(enemyBulletGameObjects[index]);
-        }
+        objectManager.DestroyAllEnemyBullets();
+
     }
 
     private void Move()
@@ -97,9 +90,9 @@ public class Player : MonoBehaviour
             animator.SetInteger("HorizontalInput", (int)h);
     }
 
-    private void CreateBullet(GameObject bulletObject, Vector3 position)
+    private void CreateBullet(PrefabType bulletObjectType, Vector3 position)
     {
-        GameObject bullet = Instantiate(bulletObject, position, transform.rotation);
+        GameObject bullet = objectManager.GetObject(bulletObjectType, position, transform.rotation);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
     }
@@ -111,22 +104,26 @@ public class Player : MonoBehaviour
 
         if (currentShotDelay < maxShotDelay)
             return;
-        
-        switch(bulletPower)
+
+        if (bulletPower <= 1)
+            CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position);
+        else if (bulletPower == 2)
         {
-            case 1:
-                CreateBullet(bulletObjectA, transform.position);
-                break;
-            case 2:
-                CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.1f);
-                CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.1f);
-                break;
-            case 3:
-                CreateBullet(bulletObjectA, transform.position + Vector3.right * 0.35f);
-                CreateBullet(bulletObjectB, transform.position);
-                CreateBullet(bulletObjectA, transform.position + Vector3.left * 0.35f);
-                break;
+            CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.right * 0.1f);
+            CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.left * 0.1f);
         }
+        else if (bulletPower >= 3)
+        {
+            CreateBullet(PrefabType.PLAYER_BULLET_B, transform.position);
+            for (int index = 0; index < bulletPower - 2; index++)
+            {
+                float positionFactor = 0.35f + 0.25f * index;
+                CreateBullet(PrefabType.PLAYER_BULLET_B, transform.position);
+                CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.right * positionFactor);
+                CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.left * positionFactor);
+            }
+        }
+
         currentShotDelay = 0;
     }
 
@@ -176,7 +173,7 @@ public class Player : MonoBehaviour
             }
 
             gameObject.SetActive(false);
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }
         else if (collision.gameObject.tag == "Item")
         {
@@ -203,7 +200,7 @@ public class Player : MonoBehaviour
                     break;
             }
 
-            Destroy(collision.gameObject);
+            collision.gameObject.SetActive(false);
         }
     }
 

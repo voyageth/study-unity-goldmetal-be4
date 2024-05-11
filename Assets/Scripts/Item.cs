@@ -17,6 +17,10 @@ public class Item : MonoBehaviour
     private void Awake()
     {
         itemRigidbody = GetComponent<Rigidbody2D>();
+    }
+
+    private void OnEnable()
+    {
         itemRigidbody.velocity = Vector3.down * 0.3f;
     }
 }
