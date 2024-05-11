@@ -48,7 +48,7 @@ public class Follower : MonoBehaviour
 
     private void CreateBullet(PrefabType bulletObjectType, Vector3 position)
     {
-        GameObject bullet = objectManager.GetObject(bulletObjectType, position, transform.rotation);
+        GameObject bullet = objectManager.GetObject(bulletObjectType, position);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
     }

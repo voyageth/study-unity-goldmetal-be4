@@ -6,21 +6,25 @@ public class ObjectManager : MonoBehaviour
     public enum PrefabType
     {
         ENEMY_SMALL, 
-        ENEMY_MEDIUM, 
-        ENEMY_LARGE, 
+        ENEMY_MEDIUM,
+        ENEMY_LARGE,
+        ENEMY_BOSS,
         ITEM_COIN, 
         ITEM_POWER, 
         ITEM_BOOM, 
         PLAYER_BULLET_A, 
         PLAYER_BULLET_B, 
-        ENEMY_BULLET_A, 
+        ENEMY_BULLET_A,
         ENEMY_BULLET_B,
+        ENEMY_BULLET_C,
+        ENEMY_BULLET_D,
         FOLLOWER_BULLET,
     }
 
     public GameObject enemySmallPrefab;
     public GameObject enemyMediumPrefab;
     public GameObject enemyLargePrefab;
+    public GameObject enemyBossPrefab;
     public GameObject itemCoinPrefab;
     public GameObject itemPowerPrefab;
     public GameObject itemBoomPrefab;
@@ -28,11 +32,14 @@ public class ObjectManager : MonoBehaviour
     public GameObject playerBulletObjectBPrefab;
     public GameObject enemyBulletObjectAPrefab;
     public GameObject enemyBulletObjectBPrefab;
+    public GameObject enemyBulletObjectCPrefab;
+    public GameObject enemyBulletObjectDPrefab;
     public GameObject followerBulletObjectAPrefab;
 
     GameObject[] enemySmallPool;
     GameObject[] enemyMediumPool;
     GameObject[] enemyLargePool;
+    GameObject[] enemyBossPool;
     GameObject[] itemCoinPool;
     GameObject[] itemPowerPool;
     GameObject[] itemBoomPool;
@@ -40,6 +47,8 @@ public class ObjectManager : MonoBehaviour
     GameObject[] playerBulletBPool;
     GameObject[] enemyBulletAPool;
     GameObject[] enemyBulletBPool;
+    GameObject[] enemyBulletCPool;
+    GameObject[] enemyBulletDPool;
     GameObject[] followerBulletAPool;
 
     private void Awake()
@@ -57,6 +66,8 @@ public class ObjectManager : MonoBehaviour
                 return enemyMediumPrefab;
             case PrefabType.ENEMY_LARGE:
                 return enemyLargePrefab;
+            case PrefabType.ENEMY_BOSS:
+                return enemyBossPrefab;
             case PrefabType.ITEM_COIN:
                 return itemCoinPrefab;
             case PrefabType.ITEM_POWER:
@@ -71,6 +82,10 @@ public class ObjectManager : MonoBehaviour
                 return enemyBulletObjectAPrefab;
             case PrefabType.ENEMY_BULLET_B:
                 return enemyBulletObjectBPrefab;
+            case PrefabType.ENEMY_BULLET_C:
+                return enemyBulletObjectCPrefab;
+            case PrefabType.ENEMY_BULLET_D:
+                return enemyBulletObjectDPrefab;
             case PrefabType.FOLLOWER_BULLET:
                 return followerBulletObjectAPrefab;
         }
@@ -88,6 +103,8 @@ public class ObjectManager : MonoBehaviour
                 return enemyMediumPool;
             case PrefabType.ENEMY_LARGE:
                 return enemyLargePool;
+            case PrefabType.ENEMY_BOSS:
+                return enemyBossPool;
             case PrefabType.ITEM_COIN:
                 return itemCoinPool;
             case PrefabType.ITEM_POWER:
@@ -102,6 +119,10 @@ public class ObjectManager : MonoBehaviour
                 return enemyBulletAPool;
             case PrefabType.ENEMY_BULLET_B:
                 return enemyBulletBPool;
+            case PrefabType.ENEMY_BULLET_C:
+                return enemyBulletCPool;
+            case PrefabType.ENEMY_BULLET_D:
+                return enemyBulletDPool;
             case PrefabType.FOLLOWER_BULLET:
                 return followerBulletAPool;
         }
@@ -114,6 +135,7 @@ public class ObjectManager : MonoBehaviour
         enemySmallPool = new GameObject[20];
         enemyMediumPool = new GameObject[10];
         enemyLargePool = new GameObject[10];
+        enemyBossPool = new GameObject[3];
         itemCoinPool = new GameObject[20];
         itemPowerPool = new GameObject[10];
         itemBoomPool = new GameObject[10];
@@ -121,6 +143,8 @@ public class ObjectManager : MonoBehaviour
         playerBulletBPool = new GameObject[100];
         enemyBulletAPool = new GameObject[100];
         enemyBulletBPool = new GameObject[100];
+        enemyBulletCPool = new GameObject[1000];
+        enemyBulletDPool = new GameObject[50];
         followerBulletAPool = new GameObject[100];
 
         foreach (PrefabType gameObjectType in Enum.GetValues(typeof(PrefabType)))
@@ -138,7 +162,7 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    public GameObject GetObject(PrefabType gameObjectType, Vector3 position, Quaternion rotation)
+    public GameObject GetObject(PrefabType gameObjectType, Vector3 position)
     {
         GameObject[] pool = GetPool(gameObjectType);
         for (int index = 0; index < pool.Length; index++)
@@ -147,7 +171,7 @@ public class ObjectManager : MonoBehaviour
             {
                 pool[index].SetActive(true);
                 pool[index].transform.position = position;
-                pool[index].transform.rotation = rotation;
+                pool[index].transform.rotation = Quaternion.identity;
                 return pool[index];
             }
         }
@@ -155,14 +179,15 @@ public class ObjectManager : MonoBehaviour
         return null;
     }
 
-    public void DestroyAllEnemies()
+    public void BoomDamageToAllEnemies()
     {
-        DestroyEnemiesByPrefabType(PrefabType.ENEMY_SMALL);
-        DestroyEnemiesByPrefabType(PrefabType.ENEMY_MEDIUM);
-        DestroyEnemiesByPrefabType(PrefabType.ENEMY_LARGE);
+        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_SMALL);
+        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_MEDIUM);
+        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_LARGE);
+        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_BOSS);
     }
 
-    private void DestroyEnemiesByPrefabType(PrefabType prefabType)
+    private void BoomDamangeToEnemyByPrefabType(PrefabType prefabType)
     {
         GameObject[] pool = GetPool(prefabType);
         for (int index = 0; index < pool.Length; index++)
@@ -170,7 +195,7 @@ public class ObjectManager : MonoBehaviour
             if (pool[index].activeSelf)
             {
                 Enemy enemy = pool[index].GetComponent<Enemy>();
-                enemy.OnHit(9999);
+                enemy.OnHit(1000);
             }
         }
     }
@@ -179,6 +204,8 @@ public class ObjectManager : MonoBehaviour
     {
         DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_A);
         DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_B);
+        DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_C);
+        DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_D);
     }
 
     private void DestroyEnemyBulletsByPrefabType(PrefabType prefabType)

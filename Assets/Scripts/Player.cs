@@ -61,7 +61,7 @@ public class Player : MonoBehaviour
         Invoke("OffBoomEffect", 4);
 
         // 2. remove enemy
-        objectManager.DestroyAllEnemies();
+        objectManager.BoomDamageToAllEnemies();
 
         // 3. remove enemy bullet
         objectManager.DestroyAllEnemyBullets();
@@ -89,7 +89,7 @@ public class Player : MonoBehaviour
 
     private void CreateBullet(PrefabType bulletObjectType, Vector3 position)
     {
-        GameObject bullet = objectManager.GetObject(bulletObjectType, position, transform.rotation);
+        GameObject bullet = objectManager.GetObject(bulletObjectType, position);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
     }

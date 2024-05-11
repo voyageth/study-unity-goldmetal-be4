@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverSet;
 
     public ObjectManager objectManager;
-    public PrefabType[] enemyObjects;
 
     List<Spawn> spawns;
     public int spawnIndex;
@@ -25,11 +24,6 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        enemyObjects = new PrefabType[] {
-            PrefabType.ENEMY_SMALL,
-            PrefabType.ENEMY_MEDIUM,
-            PrefabType.ENEMY_LARGE
-        };
         spawns = new List<Spawn>();
         ReadSpawnFile();
     }
@@ -89,27 +83,30 @@ public class GameManager : MonoBehaviour
     {
         Spawn spawnData = spawns[spawnIndex];
         Transform spawnPoint = spawnPoints[spawnData.point];
-        GameObject enemy = objectManager.GetObject(spawnData.type, spawnPoint.position, spawnPoint.rotation);
+
+        GameObject enemy = objectManager.GetObject(spawnData.type, spawnPoint.position);
         Rigidbody2D enemyRigidbody = enemy.GetComponent<Rigidbody2D>();
+        int enemySpeed;
         Enemy enemyLogic = enemy.GetComponent<Enemy>();
         enemyLogic.player = player;
         enemyLogic.objectManager = objectManager;
+        enemySpeed = enemyLogic.enemySpeed;
 
         if (spawnPoint.tag == "SpawnPointRight")
         {
             enemy.transform.Rotate(Vector3.back * 90);
-            enemyRigidbody.velocity = new Vector2(-enemyLogic.enemySpeed, -1);
+            enemyRigidbody.velocity = new Vector2(-enemySpeed, -1);
 
         }
         else if (spawnPoint.tag == "SpawnPointLeft")
         {
             enemy.transform.Rotate(Vector3.forward * 90);
-            enemyRigidbody.velocity = new Vector2(enemyLogic.enemySpeed, -1);
+            enemyRigidbody.velocity = new Vector2(enemySpeed, -1);
 
         }
         else
         {
-            enemyRigidbody.velocity = new Vector2(0, -enemyLogic.enemySpeed);
+            enemyRigidbody.velocity = new Vector2(0, -enemySpeed);
         }
 
         // 리스폰 인덱스 증가

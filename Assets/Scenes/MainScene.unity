@@ -477,8 +477,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02aedbb46b6d6534da72a4c1f7fbbf68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxShotDelay: 0.2
-  bulletSpeed: 3
+  maxShotDelay: 1
+  bulletSpeed: 10
   parentTransform: {fileID: 1402401144}
   followDelay: 30
   objectManager: {fileID: 1462618332}
@@ -1522,7 +1522,6 @@ MonoBehaviour:
   - {fileID: 2010896999}
   gameOverSet: {fileID: 574523623}
   objectManager: {fileID: 1462618332}
-  enemyObjects: 000000000000000000000000
   spawnIndex: 0
   spawnEnd: 0
 --- !u!1 &825292230
@@ -1735,8 +1734,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02aedbb46b6d6534da72a4c1f7fbbf68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxShotDelay: 0.2
-  bulletSpeed: 3
+  maxShotDelay: 1
+  bulletSpeed: 10
   parentTransform: {fileID: 176558389}
   followDelay: 30
   objectManager: {fileID: 1462618332}
@@ -2503,8 +2502,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02aedbb46b6d6534da72a4c1f7fbbf68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxShotDelay: 0.2
-  bulletSpeed: 3
+  maxShotDelay: 1
+  bulletSpeed: 10
   parentTransform: {fileID: 940535909}
   followDelay: 30
   objectManager: {fileID: 1462618332}
@@ -3156,6 +3155,7 @@ MonoBehaviour:
   enemySmallPrefab: {fileID: 2587433300053310281, guid: a9878b92e569b704eadbb2a8f083ecc1, type: 3}
   enemyMediumPrefab: {fileID: 496696508293879744, guid: 712d8ae75c518c145aa65bbad5a954cc, type: 3}
   enemyLargePrefab: {fileID: 569951350568007289, guid: 4fec26b4d54f2ff4fa276e2b481b0d0d, type: 3}
+  enemyBossPrefab: {fileID: 4359001619019971523, guid: 44e131e2afe87d848af0b6c8ef253520, type: 3}
   itemCoinPrefab: {fileID: 8891006840514441568, guid: 201c38247ace3a845a1600bb887f0501, type: 3}
   itemPowerPrefab: {fileID: 9011011180444975413, guid: 0dc213b95b65df3498bfd78a2e6602be, type: 3}
   itemBoomPrefab: {fileID: 6729756172390640208, guid: e0635d69cd807b4499777ea94766652d, type: 3}
@@ -3163,6 +3163,8 @@ MonoBehaviour:
   playerBulletObjectBPrefab: {fileID: 5218189001723559865, guid: df4ba7eb3e2dfca418f6aa8c7828aeb4, type: 3}
   enemyBulletObjectAPrefab: {fileID: 5218189001723559865, guid: 96bd120d8ee09ce4b93a1911bd543719, type: 3}
   enemyBulletObjectBPrefab: {fileID: 5218189001723559865, guid: 55a2fae160e53ab42af04652212a818e, type: 3}
+  enemyBulletObjectCPrefab: {fileID: 5218189001723559865, guid: e23535999e586404bb768be11b3b56bb, type: 3}
+  enemyBulletObjectDPrefab: {fileID: 5218189001723559865, guid: f8b2379a376aa374db42e4f8ba2dd142, type: 3}
   followerBulletObjectAPrefab: {fileID: 5218189001723559865, guid: 72031dcff3a0c364f94cb6fe0400da34, type: 3}
 --- !u!1 &1467260104
 GameObject:
