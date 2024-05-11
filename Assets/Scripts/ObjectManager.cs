@@ -1,8 +1,4 @@
 using System;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditorInternal;
 using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
@@ -19,6 +15,7 @@ public class ObjectManager : MonoBehaviour
         PLAYER_BULLET_B, 
         ENEMY_BULLET_A, 
         ENEMY_BULLET_B,
+        FOLLOWER_BULLET,
     }
 
     public GameObject enemySmallPrefab;
@@ -31,6 +28,7 @@ public class ObjectManager : MonoBehaviour
     public GameObject playerBulletObjectBPrefab;
     public GameObject enemyBulletObjectAPrefab;
     public GameObject enemyBulletObjectBPrefab;
+    public GameObject followerBulletObjectAPrefab;
 
     GameObject[] enemySmallPool;
     GameObject[] enemyMediumPool;
@@ -42,6 +40,7 @@ public class ObjectManager : MonoBehaviour
     GameObject[] playerBulletBPool;
     GameObject[] enemyBulletAPool;
     GameObject[] enemyBulletBPool;
+    GameObject[] followerBulletAPool;
 
     private void Awake()
     {
@@ -72,6 +71,8 @@ public class ObjectManager : MonoBehaviour
                 return enemyBulletObjectAPrefab;
             case PrefabType.ENEMY_BULLET_B:
                 return enemyBulletObjectBPrefab;
+            case PrefabType.FOLLOWER_BULLET:
+                return followerBulletObjectAPrefab;
         }
 
         throw new Exception("No Prefab for " + gameObjectType);
@@ -101,6 +102,8 @@ public class ObjectManager : MonoBehaviour
                 return enemyBulletAPool;
             case PrefabType.ENEMY_BULLET_B:
                 return enemyBulletBPool;
+            case PrefabType.FOLLOWER_BULLET:
+                return followerBulletAPool;
         }
 
         throw new Exception("No ObjectPool for " + gameObjectType);
@@ -118,6 +121,7 @@ public class ObjectManager : MonoBehaviour
         playerBulletBPool = new GameObject[100];
         enemyBulletAPool = new GameObject[100];
         enemyBulletBPool = new GameObject[100];
+        followerBulletAPool = new GameObject[100];
 
         foreach (PrefabType gameObjectType in Enum.GetValues(typeof(PrefabType)))
         {

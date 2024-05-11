@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,7 +60,6 @@ public class GameManager : MonoBehaviour
             spawnData.delay = float.Parse(columns[0]);
             spawnData.type = (PrefabType) System.Enum.Parse(typeof(PrefabType), columns[1]);
             spawnData.point = int.Parse(columns[2]);
-            Debug.Log("spawnData : " + spawnData.delay + "/" + spawnData.type + "/" + spawnData.point);
             spawns.Add(spawnData);
         }
 

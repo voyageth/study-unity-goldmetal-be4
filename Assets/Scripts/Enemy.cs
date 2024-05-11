@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using UnityEngine;
-using UnityEngine.UIElements;
 using static ObjectManager;
 
 public class Enemy : MonoBehaviour

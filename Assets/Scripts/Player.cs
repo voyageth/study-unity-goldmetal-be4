@@ -1,13 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using UnityEngine;
 using static ObjectManager;
 
 public class Player : MonoBehaviour
 {
-    const int MAX_BULLET_POWER = 10;
+    const int MAX_BULLET_POWER = 6;
     const int MAX_LIFE_COUNT = 3;
     const int MAX_BOOM_COUNT = 3;
 
@@ -23,6 +19,7 @@ public class Player : MonoBehaviour
     public GameManager gameManager;
     public ObjectManager objectManager;
     public GameObject boomEffect;
+    public GameObject[] followers;
 
     bool isTouchTop;
     bool isTouchBottom;
@@ -188,6 +185,8 @@ public class Player : MonoBehaviour
                         bulletPower++;
                     else
                         score += 500;
+
+                    AddFollower();
                     break;
                 case Item.ItemType.BOOM:
                     if (boomCount < MAX_BOOM_COUNT)
@@ -202,6 +201,16 @@ public class Player : MonoBehaviour
 
             collision.gameObject.SetActive(false);
         }
+    }
+
+    private void AddFollower()
+    {
+        if (bulletPower == 4)
+            followers[0].SetActive(true);
+        else if (bulletPower == 5)
+            followers[1].SetActive(true);
+        else if (bulletPower == 6)
+            followers[2].SetActive(true);
     }
 
     void OnBoomEffect()
