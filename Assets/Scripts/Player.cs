@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
 
     private void Boom()
     {
-        if (!Input.GetButton("Fire2"))
+        if (!Input.GetButton("Jump"))
             return;
 
         if (isBoomTime)

@@ -1407,7 +1407,7 @@ MonoBehaviour:
   - {fileID: 1430410725}
   - {fileID: 1913376871}
   - {fileID: 1123899057}
-  maxSpawnDelay: 2
+  nextSpawnDelay: 0
   currentSpawnDelay: 0
   scoreText: {fileID: 518079317}
   lifeImages:
@@ -1421,6 +1421,8 @@ MonoBehaviour:
   gameOverSet: {fileID: 574523623}
   objectManager: {fileID: 1462618332}
   enemyObjects: 000000000000000000000000
+  spawnIndex: 0
+  spawnEnd: 0
 --- !u!1 &825292230
 GameObject:
   m_ObjectHideFlags: 0
@@ -1972,7 +1974,7 @@ Transform:
   m_GameObject: {fileID: 1123899056}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.96, y: -5.3, z: 0}
+  m_LocalPosition: {x: -3.96, y: -4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3608,7 +3610,7 @@ Transform:
   m_GameObject: {fileID: 1913376870}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.05, y: -5.33, z: 0}
+  m_LocalPosition: {x: 4.05, y: -4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3838,12 +3840,12 @@ SceneRoots:
   - {fileID: 810796639}
   - {fileID: 1462618331}
   - {fileID: 1402401144}
+  - {fileID: 994513877}
   - {fileID: 2044420467}
   - {fileID: 1089685835}
   - {fileID: 80493428}
   - {fileID: 1879352532}
   - {fileID: 999499147}
-  - {fileID: 994513877}
   - {fileID: 316656399}
   - {fileID: 1555268050}
   - {fileID: 227592597}

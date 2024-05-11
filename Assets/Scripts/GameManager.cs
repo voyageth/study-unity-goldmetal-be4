@@ -1,16 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static ObjectManager;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject player;
     public Transform[] spawnPoints;
-    public float maxSpawnDelay;
+    public float nextSpawnDelay;
     public float currentSpawnDelay;
     public Text scoreText;
     public Image[] lifeImages;
@@ -20,6 +20,10 @@ public class GameManager : MonoBehaviour
     public ObjectManager objectManager;
     public PrefabType[] enemyObjects;
 
+    List<Spawn> spawns;
+    public int spawnIndex;
+    public bool spawnEnd;
+
     private void Awake()
     {
         enemyObjects = new PrefabType[] {
@@ -27,16 +31,54 @@ public class GameManager : MonoBehaviour
             PrefabType.ENEMY_MEDIUM,
             PrefabType.ENEMY_LARGE
         };
+        spawns = new List<Spawn>();
+        ReadSpawnFile();
+    }
+
+    void ReadSpawnFile()
+    {
+        // 1. 변수 초기화
+        spawns.Clear();
+        spawnIndex = 0;
+        spawnEnd = false;
+
+        // 2. 리스폰 파일 읽기
+        TextAsset textFile = Resources.Load("stage1") as TextAsset;
+        Debug.Log("textFile : " + textFile);
+        StringReader stringReader = new StringReader(textFile.text);
+        
+        while(true)
+        {
+            string line = stringReader.ReadLine();
+            Debug.Log(line);
+
+            if (line == null)
+                break;
+
+            // 리스폰 데이터 생성
+            Spawn spawnData = new Spawn();
+            string[] columns = line.Split(',');
+            spawnData.delay = float.Parse(columns[0]);
+            spawnData.type = (PrefabType) System.Enum.Parse(typeof(PrefabType), columns[1]);
+            spawnData.point = int.Parse(columns[2]);
+            Debug.Log("spawnData : " + spawnData.delay + "/" + spawnData.type + "/" + spawnData.point);
+            spawns.Add(spawnData);
+        }
+
+        // 텍스트 파일 닫기
+        stringReader.Close();
+
+        // 첫번째 스폰 딜레이 적용
+        nextSpawnDelay = spawns[0].delay;
     }
 
     private void Update()
     {
         currentSpawnDelay += Time.deltaTime;
 
-        if (currentSpawnDelay > maxSpawnDelay)
+        if (currentSpawnDelay > nextSpawnDelay && !spawnEnd)
         {
             SpawnEnemy();
-            maxSpawnDelay = Random.Range(0.5f, 3f);
             currentSpawnDelay = 0;
         }
 
@@ -47,9 +89,9 @@ public class GameManager : MonoBehaviour
 
     private void SpawnEnemy()
     {
-        PrefabType enemyType = enemyObjects[Random.Range(0, enemyObjects.Length)];
-        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        GameObject enemy = objectManager.GetObject(enemyType, spawnPoint.position, spawnPoint.rotation);
+        Spawn spawnData = spawns[spawnIndex];
+        Transform spawnPoint = spawnPoints[spawnData.point];
+        GameObject enemy = objectManager.GetObject(spawnData.type, spawnPoint.position, spawnPoint.rotation);
         Rigidbody2D enemyRigidbody = enemy.GetComponent<Rigidbody2D>();
         Enemy enemyLogic = enemy.GetComponent<Enemy>();
         enemyLogic.player = player;
@@ -70,8 +112,18 @@ public class GameManager : MonoBehaviour
         else
         {
             enemyRigidbody.velocity = new Vector2(0, -enemyLogic.enemySpeed);
-
         }
+
+        // 리스폰 인덱스 증가
+        spawnIndex++;
+        if (spawnIndex >= spawns.Count)
+        {
+            spawnEnd = true;
+            return;
+        }
+
+        // 다음 리스폰 딜레이 갱신
+        nextSpawnDelay = spawns[spawnIndex].delay;
     }
 
     internal void UpdateLifeIcon(int currentLifeCount, int maxLifeCount)
