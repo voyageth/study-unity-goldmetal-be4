@@ -11,6 +11,7 @@ TagManager:
   - SpawnPointRight
   - SpawnPointLeft
   - EnemyBullet
+  - Item
   layers:
   - Default
   - TransparentFX

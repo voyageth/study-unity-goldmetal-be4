@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public float currentSpawnDelay;
     public Text scoreText;
     public Image[] lifeImages;
+    public Image[] boomImages;
     public GameObject gameOverSet;
 
     private void Update()
@@ -60,18 +61,33 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    internal void UpdateLifeIcon(int currentPlayerLife)
+    internal void UpdateLifeIcon(int currentLifeCount, int maxLifeCount)
     {
         // #.UI Life Init Disable
-        for (int index = 0; index < 3; index++)
+        for (int index = 0; index < maxLifeCount; index++)
         {
             lifeImages[index].color = new Color(1, 1, 1, 0);
         }
 
         // #.UI Life Active
-        for (int index = 0; index < currentPlayerLife; index++)
+        for (int index = 0; index < currentLifeCount; index++)
         {
-            lifeImages[index].color = new Color(1, 1, 1, 0);
+            lifeImages[index].color = new Color(1, 1, 1, 1);
+        }
+    }
+
+    internal void UpdateBoomIcon(int currentBoomCount, int maxBoomCount)
+    {
+        // #.UI Boom Init Disable
+        for (int index = 0; index < maxBoomCount; index++)
+        {
+            boomImages[index].color = new Color(1, 1, 1, 0);
+        }
+
+        // #.UI Boom Active
+        for (int index = 0; index < currentBoomCount; index++)
+        {
+            boomImages[index].color = new Color(1, 1, 1, 1);
         }
     }
 

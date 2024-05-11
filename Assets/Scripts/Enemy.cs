@@ -10,11 +10,14 @@ public class Enemy : MonoBehaviour
     public int enemyHealth;
     public Sprite normalSprite;
     public Sprite onHitSprite;
-    public GameObject bulletObjectA;
-    public GameObject bulletObjectB;
     public float maxShotDelay = 1f;
     public int bulletSpeed = 10;
     public GameObject player;
+    public GameObject bulletObjectA;
+    public GameObject bulletObjectB;
+    public GameObject itemCoin;
+    public GameObject itemPower;
+    public GameObject itemBoom;
 
     float currentShotDelay;
     
@@ -67,8 +70,11 @@ public class Enemy : MonoBehaviour
         currentShotDelay += Time.deltaTime;
     }
 
-    void OnHit(int damage)
+    public void OnHit(int damage)
     {
+        if (enemyHealth <= 0)
+            return;
+
         enemyHealth -= damage;
         spriteRenderer.sprite = onHitSprite;
         CancelInvoke();
@@ -78,6 +84,30 @@ public class Enemy : MonoBehaviour
         {
             Player playerLogic = player.GetComponent<Player>();
             playerLogic.score += enemyScore;
+
+            // Random Ratio Item Drop
+            int randomNumber = Random.Range(0, 10);
+            if (randomNumber < 3)
+            {
+                // Coin
+                Instantiate(itemCoin, transform.position, itemCoin.transform.rotation);
+            }
+            else if (randomNumber < 4)
+            {
+                // Power
+                Instantiate(itemPower, transform.position, itemPower.transform.rotation);
+            }
+            else if (randomNumber < 5)
+            {
+                // Boom
+                Instantiate(itemBoom, transform.position, itemBoom.transform.rotation);
+            }
+            else 
+            {
+                Debug.Log("No Item");
+            }
+
+            // Àû ÆÄ±«
             Destroy(gameObject);
         }
     }
