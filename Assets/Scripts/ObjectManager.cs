@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class ObjectManager : MonoBehaviour
 {
-    public enum PrefabType
+    public enum ObjectType
     {
+        PLAYER,
         ENEMY_SMALL, 
         ENEMY_MEDIUM,
         ENEMY_LARGE,
@@ -19,6 +20,7 @@ public class ObjectManager : MonoBehaviour
         ENEMY_BULLET_C,
         ENEMY_BULLET_D,
         FOLLOWER_BULLET,
+        EXPLOSION,
     }
 
     public GameObject enemySmallPrefab;
@@ -35,6 +37,7 @@ public class ObjectManager : MonoBehaviour
     public GameObject enemyBulletObjectCPrefab;
     public GameObject enemyBulletObjectDPrefab;
     public GameObject followerBulletObjectAPrefab;
+    public GameObject explosionPrefab;
 
     GameObject[] enemySmallPool;
     GameObject[] enemyMediumPool;
@@ -50,81 +53,86 @@ public class ObjectManager : MonoBehaviour
     GameObject[] enemyBulletCPool;
     GameObject[] enemyBulletDPool;
     GameObject[] followerBulletAPool;
+    GameObject[] explosionPool;
 
     private void Awake()
     {
         InitializePool();
     }
 
-    GameObject GetPrefab(PrefabType gameObjectType)
+    GameObject GetPrefab(ObjectType gameObjectType)
     {
         switch (gameObjectType)
         {
-            case PrefabType.ENEMY_SMALL:
+            case ObjectType.ENEMY_SMALL:
                 return enemySmallPrefab;
-            case PrefabType.ENEMY_MEDIUM:
+            case ObjectType.ENEMY_MEDIUM:
                 return enemyMediumPrefab;
-            case PrefabType.ENEMY_LARGE:
+            case ObjectType.ENEMY_LARGE:
                 return enemyLargePrefab;
-            case PrefabType.ENEMY_BOSS:
+            case ObjectType.ENEMY_BOSS:
                 return enemyBossPrefab;
-            case PrefabType.ITEM_COIN:
+            case ObjectType.ITEM_COIN:
                 return itemCoinPrefab;
-            case PrefabType.ITEM_POWER:
+            case ObjectType.ITEM_POWER:
                 return itemPowerPrefab;
-            case PrefabType.ITEM_BOOM:
+            case ObjectType.ITEM_BOOM:
                 return itemBoomPrefab;
-            case PrefabType.PLAYER_BULLET_A:
+            case ObjectType.PLAYER_BULLET_A:
                 return playerBulletObjectAPrefab;
-            case PrefabType.PLAYER_BULLET_B:
+            case ObjectType.PLAYER_BULLET_B:
                 return playerBulletObjectBPrefab;
-            case PrefabType.ENEMY_BULLET_A:
+            case ObjectType.ENEMY_BULLET_A:
                 return enemyBulletObjectAPrefab;
-            case PrefabType.ENEMY_BULLET_B:
+            case ObjectType.ENEMY_BULLET_B:
                 return enemyBulletObjectBPrefab;
-            case PrefabType.ENEMY_BULLET_C:
+            case ObjectType.ENEMY_BULLET_C:
                 return enemyBulletObjectCPrefab;
-            case PrefabType.ENEMY_BULLET_D:
+            case ObjectType.ENEMY_BULLET_D:
                 return enemyBulletObjectDPrefab;
-            case PrefabType.FOLLOWER_BULLET:
+            case ObjectType.FOLLOWER_BULLET:
                 return followerBulletObjectAPrefab;
+            case ObjectType.EXPLOSION:
+                return explosionPrefab;
         }
 
         throw new Exception("No Prefab for " + gameObjectType);
     }
 
-    GameObject[] GetPool(PrefabType gameObjectType)
+    GameObject[] GetPool(ObjectType gameObjectType)
     {
         switch (gameObjectType)
         {
-            case PrefabType.ENEMY_SMALL:
+            case ObjectType.ENEMY_SMALL:
                 return enemySmallPool;
-            case PrefabType.ENEMY_MEDIUM:
+            case ObjectType.ENEMY_MEDIUM:
                 return enemyMediumPool;
-            case PrefabType.ENEMY_LARGE:
+            case ObjectType.ENEMY_LARGE:
                 return enemyLargePool;
-            case PrefabType.ENEMY_BOSS:
+            case ObjectType.ENEMY_BOSS:
                 return enemyBossPool;
-            case PrefabType.ITEM_COIN:
+            case ObjectType.ITEM_COIN:
                 return itemCoinPool;
-            case PrefabType.ITEM_POWER:
+            case ObjectType.ITEM_POWER:
                 return itemPowerPool;
-            case PrefabType.ITEM_BOOM:
+            case ObjectType.ITEM_BOOM:
                 return itemBoomPool;
-            case PrefabType.PLAYER_BULLET_A:
+            case ObjectType.PLAYER_BULLET_A:
                 return playerBulletAPool;
-            case PrefabType.PLAYER_BULLET_B:
+            case ObjectType.PLAYER_BULLET_B:
                 return playerBulletBPool;
-            case PrefabType.ENEMY_BULLET_A:
+            case ObjectType.ENEMY_BULLET_A:
                 return enemyBulletAPool;
-            case PrefabType.ENEMY_BULLET_B:
+            case ObjectType.ENEMY_BULLET_B:
                 return enemyBulletBPool;
-            case PrefabType.ENEMY_BULLET_C:
+            case ObjectType.ENEMY_BULLET_C:
                 return enemyBulletCPool;
-            case PrefabType.ENEMY_BULLET_D:
+            case ObjectType.ENEMY_BULLET_D:
                 return enemyBulletDPool;
-            case PrefabType.FOLLOWER_BULLET:
+            case ObjectType.FOLLOWER_BULLET:
                 return followerBulletAPool;
+            case ObjectType.EXPLOSION:
+                return explosionPool;
         }
 
         throw new Exception("No ObjectPool for " + gameObjectType);
@@ -146,9 +154,13 @@ public class ObjectManager : MonoBehaviour
         enemyBulletCPool = new GameObject[1000];
         enemyBulletDPool = new GameObject[50];
         followerBulletAPool = new GameObject[100];
+        explosionPool = new GameObject[100];
 
-        foreach (PrefabType gameObjectType in Enum.GetValues(typeof(PrefabType)))
+        foreach (ObjectType gameObjectType in Enum.GetValues(typeof(ObjectType)))
         {
+            if (ObjectType.PLAYER == gameObjectType)
+                continue;
+            
             InstantiateData(GetPool(gameObjectType), GetPrefab(gameObjectType));
         }
     }
@@ -162,7 +174,7 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    public GameObject GetObject(PrefabType gameObjectType, Vector3 position)
+    public GameObject GetObjectWithPosition(ObjectType gameObjectType, Vector3 position)
     {
         GameObject[] pool = GetPool(gameObjectType);
         for (int index = 0; index < pool.Length; index++)
@@ -181,13 +193,13 @@ public class ObjectManager : MonoBehaviour
 
     public void BoomDamageToAllEnemies()
     {
-        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_SMALL);
-        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_MEDIUM);
-        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_LARGE);
-        BoomDamangeToEnemyByPrefabType(PrefabType.ENEMY_BOSS);
+        BoomDamangeToEnemyByPrefabType(ObjectType.ENEMY_SMALL);
+        BoomDamangeToEnemyByPrefabType(ObjectType.ENEMY_MEDIUM);
+        BoomDamangeToEnemyByPrefabType(ObjectType.ENEMY_LARGE);
+        BoomDamangeToEnemyByPrefabType(ObjectType.ENEMY_BOSS);
     }
 
-    private void BoomDamangeToEnemyByPrefabType(PrefabType prefabType)
+    private void BoomDamangeToEnemyByPrefabType(ObjectType prefabType)
     {
         GameObject[] pool = GetPool(prefabType);
         for (int index = 0; index < pool.Length; index++)
@@ -202,13 +214,13 @@ public class ObjectManager : MonoBehaviour
 
     public void DestroyAllEnemyBullets()
     {
-        DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_A);
-        DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_B);
-        DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_C);
-        DestroyEnemyBulletsByPrefabType(PrefabType.ENEMY_BULLET_D);
+        DestroyEnemyBulletsByPrefabType(ObjectType.ENEMY_BULLET_A);
+        DestroyEnemyBulletsByPrefabType(ObjectType.ENEMY_BULLET_B);
+        DestroyEnemyBulletsByPrefabType(ObjectType.ENEMY_BULLET_C);
+        DestroyEnemyBulletsByPrefabType(ObjectType.ENEMY_BULLET_D);
     }
 
-    private void DestroyEnemyBulletsByPrefabType(PrefabType prefabType)
+    private void DestroyEnemyBulletsByPrefabType(ObjectType prefabType)
     {
         GameObject[] pool = GetPool(prefabType);
         for (int index = 0; index < pool.Length; index++)

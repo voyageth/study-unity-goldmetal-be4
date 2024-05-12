@@ -7,6 +7,12 @@ using System.IO;
 
 public class GameManager : MonoBehaviour
 {
+    public int stage;
+    public Animator stargeAnimator;
+    public Animator clearAnimator;
+    public Animator fadeAnimator;
+    public Transform playerInitialPosition;
+
     public GameObject player;
     public Transform[] spawnPoints;
     public float nextSpawnDelay;
@@ -25,7 +31,40 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         spawns = new List<Spawn>();
+        StageStart();
+    }
+
+    public void StageStart()
+    {
+        // Stage UI Load
+        stargeAnimator.SetTrigger("On");
+        stargeAnimator.GetComponent<Text>().text = "STAGE " + stage + "\nStart!!";
+        clearAnimator.GetComponent<Text>().text = "STAGE " + stage + "\nClear!!";
+
+        // Enemy Spawn File Read
         ReadSpawnFile();
+
+        // Fade In
+        fadeAnimator.SetTrigger("In");
+    }
+
+    public void StageEnd()
+    {
+        // Clear UI Load
+        clearAnimator.SetTrigger("On");
+
+        // Fade Out
+        fadeAnimator.SetTrigger("Out");
+
+        // Player Reposition 
+        player.transform.position = playerInitialPosition.position;
+
+        // Stage Increament
+        stage++;
+        if (stage > 2)
+            Invoke("StageStart", 6);
+        else
+            Invoke("StageStart", 5);
     }
 
     void ReadSpawnFile()
@@ -36,7 +75,7 @@ public class GameManager : MonoBehaviour
         spawnEnd = false;
 
         // 2. 리스폰 파일 읽기
-        TextAsset textFile = Resources.Load("stage1") as TextAsset;
+        TextAsset textFile = Resources.Load("stage" + stage) as TextAsset;
         Debug.Log("textFile : " + textFile);
         StringReader stringReader = new StringReader(textFile.text);
         
@@ -52,7 +91,7 @@ public class GameManager : MonoBehaviour
             Spawn spawnData = new Spawn();
             string[] columns = line.Split(',');
             spawnData.delay = float.Parse(columns[0]);
-            spawnData.type = (PrefabType) System.Enum.Parse(typeof(PrefabType), columns[1]);
+            spawnData.type = (ObjectType) System.Enum.Parse(typeof(ObjectType), columns[1]);
             spawnData.point = int.Parse(columns[2]);
             spawns.Add(spawnData);
         }
@@ -84,12 +123,13 @@ public class GameManager : MonoBehaviour
         Spawn spawnData = spawns[spawnIndex];
         Transform spawnPoint = spawnPoints[spawnData.point];
 
-        GameObject enemy = objectManager.GetObject(spawnData.type, spawnPoint.position);
+        GameObject enemy = objectManager.GetObjectWithPosition(spawnData.type, spawnPoint.position);
         Rigidbody2D enemyRigidbody = enemy.GetComponent<Rigidbody2D>();
         int enemySpeed;
         Enemy enemyLogic = enemy.GetComponent<Enemy>();
         enemyLogic.player = player;
         enemyLogic.objectManager = objectManager;
+        enemyLogic.gameManager = this;
         enemySpeed = enemyLogic.enemySpeed;
 
         if (spawnPoint.tag == "SpawnPointRight")
@@ -130,7 +170,7 @@ public class GameManager : MonoBehaviour
         }
 
         // #.UI Life Active
-        for (int index = 0; index < currentLifeCount; index++)
+        for (int index = 0; index < Mathf.Min(currentSpawnDelay, maxLifeCount); index++)
         {
             lifeImages[index].color = new Color(1, 1, 1, 1);
         }
@@ -162,6 +202,13 @@ public class GameManager : MonoBehaviour
         player.SetActive(true);
         Player playerLogic = player.GetComponent<Player>();
         playerLogic.isHit = false;
+    }
+
+    public void CallExplosion(Vector3 position, ObjectType objectType)
+    {
+        GameObject explosion = objectManager.GetObjectWithPosition(ObjectType.EXPLOSION, position);
+        Explosion explosionLogic = explosion.GetComponent<Explosion>();
+        explosionLogic.StartExplosion(objectType);
     }
 
     public void GameOver()

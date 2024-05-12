@@ -177,19 +177,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e90f41d0769582f4c8db49723317799b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: M
+  enemyObjectType: 2
   enemyScore: 100
   enemySpeed: 3
   enemyMaxHealth: 2
   enemyCurrentHealth: 2
+  player: {fileID: 0}
+  gameManager: {fileID: 0}
+  objectManager: {fileID: 0}
   normalSprite: {fileID: -1147401495359466748, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   onHitSprite: {fileID: -7844560889915226194, guid: 138040323294fd440a3a823e5d70ad01, type: 3}
   maxShotDelay: 3
   bulletSpeed: 2
-  bulletObjectA: {fileID: 5218189001723559865, guid: 96bd120d8ee09ce4b93a1911bd543719, type: 3}
-  bulletObjectB: {fileID: 5218189001723559865, guid: 55a2fae160e53ab42af04652212a818e, type: 3}
-  itemCoin: {fileID: 8891006840514441568, guid: 201c38247ace3a845a1600bb887f0501, type: 3}
-  itemPower: {fileID: 9011011180444975413, guid: 0dc213b95b65df3498bfd78a2e6602be, type: 3}
-  itemBoom: {fileID: 6729756172390640208, guid: e0635d69cd807b4499777ea94766652d, type: 3}
-  player: {fileID: 0}
-  objectManager: {fileID: 0}

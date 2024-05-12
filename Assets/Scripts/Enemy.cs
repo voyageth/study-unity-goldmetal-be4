@@ -3,13 +3,14 @@ using static ObjectManager;
 
 abstract public class Enemy : MonoBehaviour
 {
-    public string enemyName;
+    public ObjectType enemyObjectType;
     public int enemyScore = 100;
     public int enemySpeed;
     public int enemyMaxHealth = 10;
     public int enemyCurrentHealth;
 
     public GameObject player;
+    public GameManager gameManager;
     public ObjectManager objectManager;
 
     public void OnEnable()
@@ -33,17 +34,23 @@ abstract public class Enemy : MonoBehaviour
             Player playerLogic = player.GetComponent<Player>();
             playerLogic.score += enemyScore;
 
-            // ÆÄ±« Àü ÇÊ¿ä ·ÎÁ÷
+            // ÆÄ±« Àü ·ÎÁ÷
             BeforeDeActive();
 
             // Àû ÆÄ±«
             gameObject.SetActive(false);
+            gameManager.CallExplosion(transform.position, enemyObjectType);
+
+            // ÆÄ±« ÈÄ ·ÎÁ÷
+            AfterDeActive();
         }
     }
 
     abstract protected void HitEffect();
 
     abstract protected void BeforeDeActive();
+    
+    abstract protected void AfterDeActive();
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
@@ -55,20 +62,20 @@ abstract public class Enemy : MonoBehaviour
         }
     }
 
-    protected void FireBulletToPlayer(PrefabType bulletGameType, int bulletSpeed, Vector3 startPosition)
+    protected void FireBulletToPlayer(ObjectType bulletGameType, int bulletSpeed, Vector3 startPosition)
     {
         FireBulletToPosition(bulletGameType, bulletSpeed, startPosition, player.transform.position);
     }
 
-    protected void FireBulletToPosition(PrefabType bulletGameType, int bulletSpeed, Vector3 startPosition, Vector3 endPosition)
+    protected void FireBulletToPosition(ObjectType bulletGameType, int bulletSpeed, Vector3 startPosition, Vector3 endPosition)
     {
         Vector3 directionVector = (endPosition - startPosition).normalized;
         FireBulletToDirection(bulletGameType, bulletSpeed, startPosition, directionVector);
     }
 
-    protected void FireBulletToDirection(PrefabType bulletGameType, int bulletSpeed, Vector3 startPosition, Vector3 directionVector)
+    protected void FireBulletToDirection(ObjectType bulletGameType, int bulletSpeed, Vector3 startPosition, Vector3 directionVector)
     {
-        GameObject bullet = objectManager.GetObject(bulletGameType, startPosition);
+        GameObject bullet = objectManager.GetObjectWithPosition(bulletGameType, startPosition);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.AddForce(directionVector * bulletSpeed, ForceMode2D.Impulse);
 

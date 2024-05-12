@@ -183,12 +183,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fda145d4b3d261468bcf4e86e80eafc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyName: Boss
+  enemyObjectType: 4
   enemyScore: 5000
   enemySpeed: 2
   enemyMaxHealth: 3000
   enemyCurrentHealth: 0
-  maxShotDelay: 1
-  bulletSpeed: 10
   player: {fileID: 0}
+  gameManager: {fileID: 0}
   objectManager: {fileID: 0}

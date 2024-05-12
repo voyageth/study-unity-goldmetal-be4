@@ -21,17 +21,62 @@ public class Player : MonoBehaviour
     public GameObject boomEffect;
     public GameObject[] followers;
 
+    public bool[] joyControl;
+    public bool isControl;
+    public bool isButtonA;
+    public bool isButtonB;
+
     bool isTouchTop;
     bool isTouchBottom;
     bool isTouchRight;
     bool isTouchLeft;
     float currentShotDelay;
+    bool isRespawnTime;
 
     Animator animator;
+    SpriteRenderer spriteRenderer;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    private void OnEnable()
+    {
+        TurnOnUnbeatable();
+        Invoke("TurnOffUnbeatable", 3);
+    }
+
+    void TurnOnUnbeatable()
+    {
+        Unbeatable(true);
+    }
+
+    void TurnOffUnbeatable()
+    {
+        Unbeatable(false);
+    }
+
+    void Unbeatable(bool active)
+    {
+
+        if (active)
+        {
+            isRespawnTime = true;
+            spriteRenderer.color = new Color(1, 1, 1, 0.5f);
+
+            for (int index = 0; index < followers.Length; index++)
+                followers[index].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.5f);
+        }
+        else
+        {
+            isRespawnTime = false;
+            spriteRenderer.color = new Color(1, 1, 1, 1);
+
+            for (int index = 0; index < followers.Length; index++)
+                followers[index].GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+        }
     }
 
     void Update()
@@ -44,7 +89,10 @@ public class Player : MonoBehaviour
 
     private void Boom()
     {
-        if (!Input.GetButton("Jump"))
+        //if (!Input.GetButton("Jump"))
+        //    return;
+
+        if (!isButtonB)
             return;
 
         if (isBoomTime)
@@ -54,6 +102,7 @@ public class Player : MonoBehaviour
             return;
 
         boomCount--;
+        isButtonB = false;
         gameManager.UpdateBoomIcon(boomCount, MAX_BOOM_COUNT);
 
         // 1. boom effect
@@ -68,14 +117,46 @@ public class Player : MonoBehaviour
 
     }
 
+    public void JoyPanel(int type)
+    {
+        for (int index = 0; index < 9; index++)
+        {
+            joyControl[index] = index == type;
+        }
+    }
+
+    public void JoyDown()
+    {
+        isControl = true;
+    }
+
+    public void JoyUp()
+    {
+        isControl = false;
+    }
+
     private void Move()
     {
+        // keyboard control
         float h = Input.GetAxisRaw("Horizontal");
-        if ((isTouchRight && h == 1) || (isTouchLeft && h == -1))
+        float v = Input.GetAxisRaw("Vertical");
+        
+        // joy control
+        if (joyControl[0]) { h = -1;v = 1; }
+        if (joyControl[1]) { h = 0; v = 1; }
+        if (joyControl[2]) { h = 1; v = 1; }
+        if (joyControl[3]) { h = -1; v = 0; }
+        if (joyControl[4]) { h = 0; v = 0; }
+        if (joyControl[5]) { h = 1; v = 0; }
+        if (joyControl[6]) { h = -1; v = -1; }
+        if (joyControl[7]) { h = 0; v = -1; }
+        if (joyControl[8]) { h = 1; v = -1; }
+
+
+        if ((isTouchRight && h == 1) || (isTouchLeft && h == -1) || !isControl)
             h = 0;
 
-        float v = Input.GetAxisRaw("Vertical");
-        if ((isTouchTop && v == 1) || (isTouchBottom && v == -1))
+        if ((isTouchTop && v == 1) || (isTouchBottom && v == -1) || !isControl)
             v = 0;
 
         Vector3 currentPosition = transform.position;
@@ -87,37 +168,55 @@ public class Player : MonoBehaviour
             animator.SetInteger("HorizontalInput", (int)h);
     }
 
-    private void CreateBullet(PrefabType bulletObjectType, Vector3 position)
+    private void CreateBullet(ObjectType bulletObjectType, Vector3 position)
     {
-        GameObject bullet = objectManager.GetObject(bulletObjectType, position);
+        GameObject bullet = objectManager.GetObjectWithPosition(bulletObjectType, position);
         Rigidbody2D bulletRigidbody = bullet.GetComponent<Rigidbody2D>();
         bulletRigidbody.AddForce(Vector2.up * bulletSpeed, ForceMode2D.Impulse);
     }
 
+    public void ButtonADown()
+    {
+        isButtonA = true;
+    }
+    public void ButtonAUp()
+    {
+        isButtonA = false;
+    }
+
+    public void ButtonBDown()
+    {
+        isButtonB = true;
+    }
+
+
     private void Fire()
     {
-        if (!Input.GetButton("Fire1"))
+        //if (!Input.GetButton("Fire1"))
+        //    return;
+
+        if (!isButtonA)
             return;
 
         if (currentShotDelay < maxShotDelay)
             return;
 
         if (bulletPower <= 1)
-            CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position);
+            CreateBullet(ObjectType.PLAYER_BULLET_A, transform.position);
         else if (bulletPower == 2)
         {
-            CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.right * 0.1f);
-            CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.left * 0.1f);
+            CreateBullet(ObjectType.PLAYER_BULLET_A, transform.position + Vector3.right * 0.1f);
+            CreateBullet(ObjectType.PLAYER_BULLET_A, transform.position + Vector3.left * 0.1f);
         }
         else if (bulletPower >= 3)
         {
-            CreateBullet(PrefabType.PLAYER_BULLET_B, transform.position);
+            CreateBullet(ObjectType.PLAYER_BULLET_B, transform.position);
             for (int index = 0; index < bulletPower - 2; index++)
             {
                 float positionFactor = 0.35f + 0.25f * index;
-                CreateBullet(PrefabType.PLAYER_BULLET_B, transform.position);
-                CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.right * positionFactor);
-                CreateBullet(PrefabType.PLAYER_BULLET_A, transform.position + Vector3.left * positionFactor);
+                CreateBullet(ObjectType.PLAYER_BULLET_B, transform.position);
+                CreateBullet(ObjectType.PLAYER_BULLET_A, transform.position + Vector3.right * positionFactor);
+                CreateBullet(ObjectType.PLAYER_BULLET_A, transform.position + Vector3.left * positionFactor);
             }
         }
 
@@ -151,6 +250,11 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
         {
+            if (isRespawnTime)
+            {
+                return;
+            }
+            
             if (isHit)
             {
                 return;
@@ -159,6 +263,7 @@ public class Player : MonoBehaviour
 
             life--;
             gameManager.UpdateLifeIcon(life, MAX_LIFE_COUNT);
+            gameManager.CallExplosion(transform.position, ObjectType.PLAYER);
 
             if (life <= 0)
             {
@@ -205,11 +310,11 @@ public class Player : MonoBehaviour
 
     private void AddFollower()
     {
-        if (bulletPower == 4)
+        if (bulletPower >= 4)
             followers[0].SetActive(true);
-        else if (bulletPower == 5)
+        if (bulletPower >= 5)
             followers[1].SetActive(true);
-        else if (bulletPower == 6)
+        if (bulletPower >= 6)
             followers[2].SetActive(true);
     }
 

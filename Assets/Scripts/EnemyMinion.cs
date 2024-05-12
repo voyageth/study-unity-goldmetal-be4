@@ -42,6 +42,10 @@ public class EnemyMinion : Enemy
         CreateItem();
     }
 
+    protected override void AfterDeActive()
+    {
+    }
+
     private void CreateItem()
     {
         // Random Ratio Item Drop
@@ -49,17 +53,17 @@ public class EnemyMinion : Enemy
         if (randomNumber < 3)
         {
             // Coin
-            objectManager.GetObject(PrefabType.ITEM_COIN, transform.position);
+            objectManager.GetObjectWithPosition(ObjectType.ITEM_COIN, transform.position);
         }
         else if (randomNumber < 4)
         {
             // Power
-            objectManager.GetObject(PrefabType.ITEM_POWER, transform.position);
+            objectManager.GetObjectWithPosition(ObjectType.ITEM_POWER, transform.position);
         }
         else if (randomNumber < 5)
         {
             // Boom
-            objectManager.GetObject(PrefabType.ITEM_BOOM, transform.position);
+            objectManager.GetObjectWithPosition(ObjectType.ITEM_BOOM, transform.position);
         }
         else
         {
@@ -78,20 +82,20 @@ public class EnemyMinion : Enemy
         if (currentShotDelay < maxShotDelay)
             return;
         
-        if (enemyName == "S")
+        if (enemyObjectType == ObjectType.ENEMY_SMALL)
         {
-            FireBulletToPlayer(PrefabType.ENEMY_BULLET_A, bulletSpeed, transform.position);
+            FireBulletToPlayer(ObjectType.ENEMY_BULLET_A, bulletSpeed, transform.position);
         }
-        else if (enemyName == "M")
+        else if (enemyObjectType == ObjectType.ENEMY_MEDIUM)
         {
-            FireBulletToPlayer(PrefabType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.right * 0.3f);
-            FireBulletToPlayer(PrefabType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.left * 0.3f);
+            FireBulletToPlayer(ObjectType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.right * 0.3f);
+            FireBulletToPlayer(ObjectType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.left * 0.3f);
         }
-        else if (enemyName == "L")
+        else if (enemyObjectType == ObjectType.ENEMY_LARGE)
         {
-            FireBulletToPlayer(PrefabType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.right * 0.3f);
-            FireBulletToPlayer(PrefabType.ENEMY_BULLET_B, bulletSpeed, transform.position);
-            FireBulletToPlayer(PrefabType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.left * 0.3f);
+            FireBulletToPlayer(ObjectType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.right * 0.3f);
+            FireBulletToPlayer(ObjectType.ENEMY_BULLET_B, bulletSpeed, transform.position);
+            FireBulletToPlayer(ObjectType.ENEMY_BULLET_A, bulletSpeed, transform.position + Vector3.left * 0.3f);
         }
 
         currentShotDelay = 0;

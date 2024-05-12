@@ -46,6 +46,11 @@ public class EnemyBoss : Enemy
     {
     }
 
+    protected override void AfterDeActive()
+    {
+        gameManager.StageEnd();
+    }
+
     private void Stop()
     {
         if (!gameObject.activeSelf)
@@ -91,10 +96,10 @@ public class EnemyBoss : Enemy
             return;
 
         Debug.Log("앞으로 4발 발사");
-        FireBulletToDirection(PrefabType.ENEMY_BULLET_D, 8, transform.position + Vector3.right * 0.4f, Vector2.down);
-        FireBulletToDirection(PrefabType.ENEMY_BULLET_D, 8, transform.position + Vector3.right * 0.8f, Vector2.down);
-        FireBulletToDirection(PrefabType.ENEMY_BULLET_D, 8, transform.position + Vector3.left * 0.4f, Vector2.down);
-        FireBulletToDirection(PrefabType.ENEMY_BULLET_D, 8, transform.position + Vector3.left * 0.8f, Vector2.down);
+        FireBulletToDirection(ObjectType.ENEMY_BULLET_D, 8, transform.position + Vector3.right * 0.4f, Vector2.down);
+        FireBulletToDirection(ObjectType.ENEMY_BULLET_D, 8, transform.position + Vector3.right * 0.8f, Vector2.down);
+        FireBulletToDirection(ObjectType.ENEMY_BULLET_D, 8, transform.position + Vector3.left * 0.4f, Vector2.down);
+        FireBulletToDirection(ObjectType.ENEMY_BULLET_D, 8, transform.position + Vector3.left * 0.8f, Vector2.down);
 
         currentPatternCount++;
 
@@ -113,7 +118,7 @@ public class EnemyBoss : Enemy
         for (int index = 0; index < 5; index++)
         {
             Vector3 randomVector = new Vector3(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 2f));
-            FireBulletToPosition(PrefabType.ENEMY_BULLET_C, 3, transform.position, randomVector);
+            FireBulletToPosition(ObjectType.ENEMY_BULLET_C, 3, transform.position, randomVector);
         }
 
         currentPatternCount++;
@@ -131,7 +136,7 @@ public class EnemyBoss : Enemy
 
         Debug.Log("부채 모양으로 발사");
         Vector3 directionVector = new Vector3(Mathf.Cos(Mathf.PI * 10 * currentPatternCount / maxPatternCount[patternIndex]), -1);
-        FireBulletToDirection(PrefabType.ENEMY_BULLET_C, 5, transform.position, directionVector);
+        FireBulletToDirection(ObjectType.ENEMY_BULLET_C, 5, transform.position, directionVector);
         
         currentPatternCount++;
 
@@ -154,7 +159,7 @@ public class EnemyBoss : Enemy
             Vector3 directionVector = new Vector3(Mathf.Cos(Mathf.PI * 2 * index / roundNumber), Mathf.Sin(Mathf.PI * 2 * index / roundNumber));
             //Vector3 rotationVector = Vector3.forward * 360 * index / roundNumber + Vector3.forward * 90;
             //FireBulletToDirectionWithRotation(PrefabType.ENEMY_BULLET_C, 5, transform.position, directionVector, rotationVector);
-            FireBulletToDirection(PrefabType.ENEMY_BULLET_C, 5, transform.position, directionVector);
+            FireBulletToDirection(ObjectType.ENEMY_BULLET_C, 5, transform.position, directionVector);
         }
 
         currentPatternCount++;
